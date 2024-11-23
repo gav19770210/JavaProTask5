@@ -19,7 +19,11 @@ public class ProductDAO implements AbstractDAO<Product, Long> {
     private final String tableName = "products";
     private final String tableID = "id";
     @Autowired
-    DBConnector dbConnector;
+    private final DBConnector dbConnector;
+
+    public ProductDAO(DBConnector dbConnector) {
+        this.dbConnector = dbConnector;
+    }
 
     @SneakyThrows
     @Override
@@ -32,6 +36,28 @@ public class ProductDAO implements AbstractDAO<Product, Long> {
                 if (rs.next()) {
                     Product product = new Product();
                     product.setId(id);
+                    product.setAccountNumber(rs.getString("account_number"));
+                    product.setBalance(rs.getBigDecimal("balance"));
+                    product.setType(ProductType.valueOf(rs.getString("type")));
+                    product.setUserId(rs.getLong("user_id"));
+                    return Optional.of(product);
+                }
+                rs.close();
+            }
+        }
+        return Optional.empty();
+    }
+
+    @SneakyThrows
+    public Optional<Product> findByAccount(String accountNumber) {
+        String sql = "SELECT * FROM " + tableName + " WHERE account_number=?";
+        try (Connection connection = dbConnector.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, accountNumber);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Product product = new Product();
+                    product.setId(rs.getLong(tableID));
                     product.setAccountNumber(rs.getString("account_number"));
                     product.setBalance(rs.getBigDecimal("balance"));
                     product.setType(ProductType.valueOf(rs.getString("type")));

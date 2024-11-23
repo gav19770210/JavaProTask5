@@ -1,7 +1,6 @@
 package ru.gav19770210.javapro.task05.repositories;
 
 import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import ru.gav19770210.javapro.task05.entities.User;
 
@@ -17,8 +16,11 @@ import java.util.Optional;
 public class UserDAO implements AbstractDAO<User, Long> {
     private final String tableName = "users";
     private final String tableID = "id";
-    @Autowired
-    DBConnector dbConnector;
+    private final DBConnector dbConnector;
+
+    public UserDAO(DBConnector dbConnector) {
+        this.dbConnector = dbConnector;
+    }
 
     @SneakyThrows
     @Override

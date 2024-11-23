@@ -7,7 +7,6 @@ import ru.gav19770210.javapro.task05.entities.Product;
 import ru.gav19770210.javapro.task05.services.ProductService;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @RestController
 public class ProductController {
@@ -18,14 +17,9 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @GetMapping(value = "/product/get/{id}")
+    @GetMapping(value = "/product/{id}/get")
     public Product getProductById(@PathVariable("id") Long id) {
-        var productGet = productService.getProductById(id);
-        if (productGet != null) {
-            return productGet;
-        } else {
-            throw new NoSuchElementException("Не найден продукт с ИД = " + id);
-        }
+        return productService.getProductById(id);
     }
 
     @GetMapping(value = "/product/get-all")
@@ -33,7 +27,7 @@ public class ProductController {
         return productService.getAllProducts();
     }
 
-    @GetMapping(value = "/product/get-by-user/{user_id}")
+    @GetMapping(value = "/product/{user_id}/get-by-user")
     public List<Product> getProductByUser(@PathVariable("user_id") Long user_id) {
         return productService.getUserProducts(user_id);
     }
@@ -41,32 +35,18 @@ public class ProductController {
     @PostMapping(value = "/product/create")
     public HttpStatus createProduct(@RequestBody Product product) {
         var productCreate = productService.createProduct(product);
-        if (productCreate != null) {
-            return HttpStatus.OK;
-        } else {
-            throw new IllegalArgumentException("Ошибка добавления продукта");
-        }
+        return HttpStatus.OK;
     }
 
     @PostMapping(value = "/product/update")
     public HttpStatus updateProduct(@RequestBody Product product) {
-        var productGet = productService.getProductById(product.getId());
-        if (productGet != null) {
-            productService.updateProduct(product);
-            return HttpStatus.OK;
-        } else {
-            throw new NoSuchElementException("Не найден продукт с ИД = " + product.getId());
-        }
+        var productUpdate = productService.updateProduct(product);
+        return HttpStatus.OK;
     }
 
-    @DeleteMapping(value = "/product/delete/{id}")
+    @DeleteMapping(value = "/product/{id}/delete")
     public HttpStatus deleteProduct(@PathVariable("id") Long id) {
-        var productGet = productService.getProductById(id);
-        if (productGet != null) {
-            productService.deleteProductById(id);
-            return HttpStatus.OK;
-        } else {
-            throw new NoSuchElementException("Не найден продукт с ИД = " + id);
-        }
+        productService.deleteProductById(id);
+        return HttpStatus.OK;
     }
 }
